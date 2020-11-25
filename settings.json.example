@@ -1,0 +1,13 @@
+{
+  "bot_token": "YOUR_TOKEN_HERE",
+  "account_name": "my_account",
+  "plugins": {
+    "root": "plugins"
+  },
+  "admins": [
+    "YOUR_ID_HERE"
+  ],
+  "welcome": "Welcome.",
+  "disclaimer": "SET HERE YOUR DISCLAIMER",
+  "my_username": "YOUR_BOT_USERNAME"
+}
