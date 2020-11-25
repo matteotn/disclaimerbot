@@ -7,7 +7,7 @@
   "admins": [
     "YOUR_ID_HERE"
   ],
-  "welcome": "Welcome.",
+  "welcome": "Welcome in {}, [{}](tg://user?id={})!",
   "disclaimer": "SET HERE YOUR DISCLAIMER",
   "my_username": "YOUR_BOT_USERNAME"
 }

@@ -24,8 +24,10 @@ def clear_user(client, hex, id_user, accept):
         except Exception as e:
             print(e)
         try:
+            user = client.get_chat_member(bot.pending[hex]['chat_id'], bot.pending[hex]['user_id']).user
             client.edit_message_text(bot.pending[hex]['chat_id'], bot.pending[hex]['message_id'],
-                                     f"LOG: COSE DA SCRIVERE")
+                                     f"L'utente [{user.first_name}](tg://user?id={user.id})"
+                                     f"\n{'non ' if not accept else ''}ha accettato il disclaimer.\n{'È stato rimosso dal gruppo.' if not accept else ''}")
         except Exception as e:
             print(e)
         del bot.pending[hex]

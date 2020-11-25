@@ -13,10 +13,11 @@ def current_time(): return int(round(time.time()))
 def ban_log(client, hex, id_user):
     if hex in bot.pending:
         client.get_chat(bot.pending[hex]['chat_id']).kick_member(id_user)
-
+        user = client.get_chat_member(bot.pending[hex]['chat_id'], bot.pending[hex]['user_id']).user
         try:
             client.edit_message_text(bot.pending[hex]['chat_id'], bot.pending[hex]['message_id'],
-                                     f"LOG: COSE DA SCRIVERE")
+                                     f"L'utente [{user.first_name}](tg://user?id={user.id}) "
+                                     f"\nnon ha accettato i termini entro il tempo previsto.\nL'ho rimosso dal gruppo.")
         except Exception as e:
             print(e)
         del bot.pending[hex]
@@ -36,12 +37,12 @@ def update_msg_id(hex, message_id):
     bot.pending[hex]['message_id'] = message_id
 
 
-def is_valid(hex, seconds=60):
+def is_valid(hex, seconds=300):
     print(current_time() - bot.pending[hex]['date'])
     return current_time() - bot.pending[hex]['date'] <= seconds
 
 
-def timer_set(id_task: str, job, args: list, seconds=10):
+def timer_set(id_task: str, job, args: list, seconds=300):
     timer = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
     bot.scheduler.add_job(job, 'date', run_date=timer, id=id_task, args=args, replace_existing=True)
 
@@ -56,7 +57,8 @@ def handlerJoin(client, message):
                     message.chat.restrict_member(user.id, ChatPermissions(can_send_messages=False))
 
                     uuid_generated = uuid_gen(user, message.chat.id)
-                    msg = message.reply(bot.settings['welcome'] if 'welcome' in bot.settings else 'Welcome',
+                    msg = message.reply(bot.settings['welcome'].format(message.chat.title, message.from_user.first_name,
+                                                                       message.from_user.id) if 'welcome' in bot.settings else 'Welcome',
                                         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
                                             text="Click Me",
                                             url=f"https://t.me/{bot.settings['my_username']}?start={uuid_generated}"
@@ -68,20 +70,13 @@ def handlerJoin(client, message):
                     print(e)
 
             else:
-                message.reply("CIAOBELLO")
-
-
-@Client.on_message(Filters.command("schedulers") & Filters.private)
-def schedulers(client, message):
-    bot.scheduler.print_jobs()
-    print(bot.scheduler.running)
+                message.reply(
+                    f"Un amministratore è entrato nel gruppo. Salutate [{message.from_user.first_name}](tg://user?id={message.from_user.id})!")
 
 
 @Client.on_message(Filters.command("start") & Filters.private)
 def start(client, message):
     split = message.text.split()
-    print(message.text)
-    print(bot.pending)
     if len(split) == 2:
         if split[1] in bot.pending and message.from_user.id == bot.pending[split[1]]['user_id']:
             if is_valid(split[1]):
