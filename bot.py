@@ -27,7 +27,7 @@ class Bot(metaclass=Singleton):
 
     def load(self) -> list:
         if path.exists('settings.json'):
-            with open('settings.json', 'r') as file:
+            with open('settings.json', 'r', encoding='utf-8') as file:
                 self.settings = json.load(file)
         else:
             raise AssertionError(
