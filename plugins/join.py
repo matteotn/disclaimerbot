@@ -46,10 +46,8 @@ def timer_set(id_task: str, job, args: list, seconds=300):
     bot.scheduler.add_job(job, 'date', run_date=timer, id=id_task, args=args, replace_existing=True)
 
 
-# TODO Rimuovere trigger
 @Client.on_message((Filters.group & Filters.new_chat_members) | Filters.command('disclaimer'), group=-1)
 def handlerJoin(client, message):
-    # TODO momentaneo per debugging
     if message.chat.id == -1001128902578 or message.chat.id == -1001244432522:  # speck and memes or debug
         if message.new_chat_members is not None:
             new_chat_members = message.new_chat_members

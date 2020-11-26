@@ -42,8 +42,11 @@ def associo(client, message):
 
 @Client.on_message(Filters.command("s"))
 def sarcasm(client, message):
-    # message.delete()
     if message.reply_to_message is not None:
+        try:
+            message.delete()
+        except:
+            pass
         output = random.choice(sarcasm_words)
         message.reply_to_message.reply(
             output.format(message.from_user.first_name, message.from_user.id), disable_web_page_preview=True)
