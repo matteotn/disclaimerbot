@@ -38,7 +38,6 @@ def update_msg_id(hex, message_id):
 
 
 def is_valid(hex, seconds=300):
-    print(current_time() - bot.pending[hex]['date'])
     return current_time() - bot.pending[hex]['date'] <= seconds
 
 
@@ -47,9 +46,14 @@ def timer_set(id_task: str, job, args: list, seconds=300):
     bot.scheduler.add_job(job, 'date', run_date=timer, id=id_task, args=args, replace_existing=True)
 
 
-@Client.on_message((Filters.group & Filters.new_chat_members) | Filters.command('trigger'), group=-1)
+# TODO Rimuovere trigger
+@Client.on_message((Filters.group & Filters.new_chat_members) | Filters.command('disclaimer'), group=-1)
 def handlerJoin(client, message):
-    new_chat_members = [message.from_user]
+    # TODO momentaneo per debugging
+    if message.new_chat_members is not None:
+        new_chat_members = message.new_chat_members
+    else:
+        new_chat_members = [message.from_user]
     for user in new_chat_members:
         if not user.is_self:
             if not bot.admin(user.id):
@@ -82,13 +86,13 @@ def start(client, message):
             if is_valid(split[1]):
                 message.reply(bot.settings['disclaimer'], reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton(
-                        text='Accetto!',
+                        text='Accetto',
                         callback_data=f"accept_{split[1]}"
                     )],
                     [InlineKeyboardButton(
-                        text='Rifiuto!',
+                        text='Declino',
                         callback_data=f"refuse_{split[1]}"
                     )]
-                ]))
+                ]),disable_web_page_preview=True)
             else:
                 message.reply("Il link non è più valido.")
