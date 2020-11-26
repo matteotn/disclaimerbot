@@ -50,32 +50,37 @@ def timer_set(id_task: str, job, args: list, seconds=300):
 @Client.on_message((Filters.group & Filters.new_chat_members) | Filters.command('disclaimer'), group=-1)
 def handlerJoin(client, message):
     # TODO momentaneo per debugging
-    if message.new_chat_members is not None:
-        new_chat_members = message.new_chat_members
-    else:
-        new_chat_members = [message.from_user]
-    for user in new_chat_members:
-        if not user.is_self:
-            if not bot.admin(user.id):
-                try:
-                    message.chat.restrict_member(user.id, ChatPermissions(can_send_messages=False))
+    if message.chat.id == -1001128902578 or message.chat.id == -1001244432522:  # speck and memes or debug
+        if message.new_chat_members is not None:
+            new_chat_members = message.new_chat_members
+        elif message.reply_to_message is not None and bot.admin(message.from_user.id):
+            message.delete()
+            new_chat_members = [message.reply_to_message.from_user]
+        else:
+            message.delete()
+            new_chat_members = [message.from_user]
+        for user in new_chat_members:
+            if not user.is_self:
+                if not bot.admin(user.id):
+                    try:
+                        message.chat.restrict_member(user.id, ChatPermissions(can_send_messages=False))
 
-                    uuid_generated = uuid_gen(user, message.chat.id)
-                    msg = message.reply(bot.settings['welcome'].format(message.chat.title, message.from_user.first_name,
-                                                                       message.from_user.id) if 'welcome' in bot.settings else 'Welcome',
-                                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
-                                            text="Click Me",
-                                            url=f"https://t.me/{bot.settings['my_username']}?start={uuid_generated}"
-                                        )]]))
-                    update_msg_id(uuid_generated, msg.message_id)
-                    timer_set(f"{user.id}_{message.chat.id}", ban_log, args=[client, uuid_generated, user.id])
-                    timer_set(f"{message.message_id}_{message.chat.id}", message.delete, args=[])
-                except Exception as e:
-                    print(e)
+                        uuid_generated = uuid_gen(user, message.chat.id)
+                        msg = message.reply(bot.settings['welcome'].format(message.chat.title, user.first_name,
+                                                                           user.id) if 'welcome' in bot.settings else 'Welcome',
+                                            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                                                text="Click Me",
+                                                url=f"https://t.me/{bot.settings['my_username']}?start={uuid_generated}"
+                                            )]]))
+                        update_msg_id(uuid_generated, msg.message_id)
+                        timer_set(f"{user.id}_{message.chat.id}", ban_log, args=[client, uuid_generated, user.id])
+                        timer_set(f"{message.message_id}_{message.chat.id}", message.delete, args=[])
+                    except Exception as e:
+                        print(e)
 
-            else:
-                message.reply(
-                    f"Un amministratore è entrato nel gruppo. Salutate [{message.from_user.first_name}](tg://user?id={message.from_user.id})!")
+                else:
+                    message.reply(
+                        f"Un amministratore è entrato nel gruppo. Salutate [{message.from_user.first_name}](tg://user?id={message.from_user.id})!")
 
 
 @Client.on_message(Filters.command("start") & Filters.private)
@@ -93,6 +98,6 @@ def start(client, message):
                         text='Declino',
                         callback_data=f"refuse_{split[1]}"
                     )]
-                ]),disable_web_page_preview=True)
+                ]), disable_web_page_preview=True)
             else:
                 message.reply("Il link non è più valido.")
