@@ -3,6 +3,7 @@ import json
 from os import path
 from warnings import warn
 from apscheduler.schedulers.background import BackgroundScheduler
+from .libraries.pottery import RedisDictWrapper
 
 
 class Singleton(type):
@@ -18,6 +19,7 @@ class Bot(metaclass=Singleton):
     def __init__(self):
         self.settings = {}
         self.pending = {}
+        self.users = RedisDictWrapper(redis_link='redis://localhost:6379/13', key='disclaimer_users')
         self.scheduler = BackgroundScheduler()
         self.scheduler.start()
         account_name, bot_token, plugins = self.load()
