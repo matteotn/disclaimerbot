@@ -51,27 +51,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
 # pyenv
 .python-version
 
@@ -102,9 +81,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-#pyrogram config
+
+# pyrogram config
 config.ini
 settings.json
 *.session
-#sqlite files
+
+# sqlite files
 *.db
